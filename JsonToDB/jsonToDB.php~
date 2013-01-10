@@ -1,8 +1,19 @@
  <?php
-	$con = mysql_connect("localhost","root","RSTcd489CCCisco");
-	mysql_select_db("test", $con);
-	
-	$file = fopen($_GET["file"],'r');
+	if(!$con = mysql_connect("localhost","root","Praksa2012"))
+	{
+		echo 'error connecting to database';
+		break;
+	}
+	if(!mysql_select_db('test', $con))
+	{
+		echo 'error selecting database';
+		break;
+	}
+	if(!$file = fopen($_GET["file"],'r'))
+	{
+		echo 'error opening file';
+		break;
+	}
 while(!feof($file))
 {
 	$json = '';
@@ -11,7 +22,6 @@ while(!feof($file))
 		$json = $json . $input;
 	}
 	$json = $json . '}';
-	$json;
 	//$json = fgets($file);
 	$data = json_decode($json);
 	if( $data === null)
@@ -45,9 +55,31 @@ while(!feof($file))
 	else
 	{
 		//echo print_r($data);
-		$upit ='INSERT INTO Broadcast (Date,Time,Name) VALUES ("'. $data->{'Date'} . '","' . $data->{'Time'} . '","' . $data->{'Name'} . '");';
-		//mysql_query($upit);
-		echo $upit . '<br/>';
+		//$upit ='INSERT INTO Broadcast (Date,Time,Name) VALUES ("'. $data->{'Date'} . '","' . $data->{'Time'} . '","' . $data->{'Name'} . '");';
+		$var = $data->{'Date'} . $data->{'Time'};
+		$DateTime = date("Y-m-d H-i-s",strtotime($var));
+		$result = mysql_fetch_array(mysql_query('SELECT TVid FROM TVStation WHERE TVName LIKE ("' . $data->{'TV'} .'")'),MYSQL_ASSOC);
+		if(!$result)
+		{
+			echo 'error! No such TV<br/>';
+		}
+		else
+		{
+			$tvID = $result['TVid'];
+			$result = mysql_fetch_array(mysql_query('SELECT EntityTypeId FROM MetaEAVEntityType 
+								WHERE EntityTypeName LIKE ("' . $data->{'Type'} . '");'),MYSQL_ASSOC);
+			if($result)
+			{
+				$EntID = $result['EntityTypeId'];
+				$upit ='INSERT INTO EAVEntity (DateTime,EntityTypeId,TVStation) VALUES ("'. $DateTime . '",' . $EntID . ',' . $tvID . ');';
+				if(mysql_query($upit))
+					echo 'Successfully inserted ' . $DateTime . '","' . $data->{'Name'} . ' ' .$upit . '<br/>';
+				else
+					echo 'Error inserting  ' . $DateTime . '","' . $data->{'Name'} . $upit . '<br/>';
+			}
+			else
+				echo 'No Entity Type named: ' . $data->{'Type'} . '<br/>';
+		}
 	}
 }
 mysql_close($con);
