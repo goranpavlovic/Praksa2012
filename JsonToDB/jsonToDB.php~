@@ -1,10 +1,22 @@
  <?php
+function checkIfExists($timestamp,$tv)
+{
+	mysql_select_db('Praksa2012',mysql_connect("localhost","root","Praksa2012"));
+	$query = 'SELECT * FROM EAVEntity WHERE DateTime = "' . $timestamp . '" AND TvStation = ' . $tv . ';';
+	echo $query . '<br/>';
+	$result = mysql_query($query);
+	if(mysql_fetch_array($result))
+		return TRUE;
+	else
+		return FALSE;
+}
+
 	if(!$con = mysql_connect("localhost","root","Praksa2012"))
 	{
 		echo 'error connecting to database';
 		break;
 	}
-	if(!mysql_select_db('test', $con))
+	if(!mysql_select_db('Praksa2012', $con))
 	{
 		echo 'error selecting database';
 		break;
@@ -71,11 +83,25 @@ while(!feof($file))
 			if($result)
 			{
 				$EntID = $result['EntityTypeId'];
-				$upit ='INSERT INTO EAVEntity (DateTime,EntityTypeId,TVStation) VALUES ("'. $DateTime . '",' . $EntID . ',' . $tvID . ');';
-				if(mysql_query($upit))
-					echo 'Successfully inserted ' . $DateTime . '","' . $data->{'Name'} . ' ' .$upit . '<br/>';
+				if(!checkIfExists($DateTime,$tvID))
+				{
+					$upit ='INSERT INTO EAVEntity (DateTime,EntityTypeId,TVStation) 
+							VALUES ("'. $DateTime . '",' . $EntID . ',' . $tvID . ');';
+					if(mysql_query($upit))
+						echo 'Successfully inserted ' . $DateTime . '","' . $data->{'Name'} . ' ' .$upit . '<br/>';
+					else
+						echo 'Error inserting  ' . $DateTime . '","' . $data->{'Name'} . $upit . '<br/>';
+				}
 				else
-					echo 'Error inserting  ' . $DateTime . '","' . $data->{'Name'} . $upit . '<br/>';
+				{
+					$query = 'UPDATE EAVEntity SET 
+							EntityTypeId = ' . $EntID .
+							' WHERE DateTime = "' . $DateTime . '" AND TvStation = ' . $tvID . ';';
+					if(mysql_query($query))
+						echo 'Updated: ' . $DateTime . ' Entity: ' . $EntID . ' TV: ' . $tvID . '<br/>';
+					else
+						echo 'Error updating' . $query . '<br/>';
+				}
 			}
 			else
 				echo 'No Entity Type named: ' . $data->{'Type'} . '<br/>';

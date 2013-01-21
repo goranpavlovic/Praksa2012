@@ -1,10 +1,24 @@
 <?php
+
+function checkIfExists($attribute,$entity)
+{
+	mysql_select_db('Praksa2012',mysql_connect("localhost","root","Praksa2012"));
+	$query = 'SELECT * FROM EAVAttributeValue WHERE AttributeId = ' . $attribute . ' AND EntityId = "' . $entity . '";';
+	//echo $query . '<br/>';
+	$result = mysql_query($query);
+	if(mysql_fetch_array($result))
+		return TRUE;
+	else
+		return FALSE;
+}
+
+
 if(!$con = mysql_connect("localhost","root","Praksa2012"))
 {
 	echo 'error connecting to database';
 	break;
 }
-if(!mysql_select_db('test', $con))
+if(!mysql_select_db('Praksa2012', $con))
 {
 	echo 'error selecting database';
 	break;
@@ -54,20 +68,30 @@ while(!feof($file))
 	}
 	else
 	{
+	    //Get TvId
+		$query = 'SELECT TvId FROM TVStation WHERE TvName = "' . $data->{'TV'} . '";';
+		echo $query;
+		$res = mysql_query($query);
+		$fetch= mysql_fetch_array($res);
+		$tvid = $fetch['TvId'];
+		echo 'tv id = ' . $tvid . '<br/>';
 		foreach($data as $key => $value)
 		{
 			if($key !== 'TV' && $key !== 'Date' && $key !== 'Time' && $key !== 'Type')
 			{
+			    //Get EntityId
 				$dateString = explode('-',$data->{'Date'});
 				$query = 'SELECT EntityId FROM EAVEntity 
-						WHERE DateTime = "' . $dateString[2]. '-' . $dateString[1]. '-' . $dateString[0] . ' ' . $data->{'Time'} . '";';
-				$result = mysql_query($query);
+						WHERE DateTime = "' . $dateString[2]. '-' . $dateString[1]. '-' . $dateString[0] . ' ' . $data->{'Time'} . '" AND TvStation = ' . $tvid . ';';
+				if(!$result = mysql_query($query))
+				    echo 'Error executing: ' . $query . '<br />'; 
 				if(!($row = mysql_fetch_array($result, MYSQL_ASSOC)))
 				{
 					echo 'No record of: ' . $data->{'Name'} . ' on: ' . $data->{'Time'} . ' ' . $data->{'Date'} . ' in database ' . $query .'<br/>';
 				}
 				else
 				{
+				    //Get AttributeId
 					$entity = $row["EntityId"];
 					$result = mysql_query('SELECT AttributeId FROM MetaEAVAttribute WHERE AttributeName LIKE ("' . $key . '");');
 					if(!($row = mysql_fetch_array($result, MYSQL_ASSOC)))
@@ -77,13 +101,27 @@ while(!feof($file))
 					else
 					{
 						$attribute = $row['AttributeId'];
-						$query = 'INSERT INTO EAVAttributeValue (AttributeId,Value,EntityId) 
-								VALUES (' . $attribute . ',"' . $value . '",' . $entity . ');';
-						//echo 'inserting... ' . $query . '<br/>';
-						if(mysql_query($query))
-							echo 'Succesfully inserted value: ' . $value . '<br/>';
+						if(!checkIfExists($attribute,$entity))
+						{
+							$query = "INSERT INTO EAVAttributeValue (AttributeId,Value,EntityId) 
+									VALUES (" . $attribute . ",'" . $value . "','" . $entity . "');";
+							//echo 'inserting... ' . $query . '<br/>';
+							if(mysql_query($query))
+								echo 'Succesfully inserted value: ' . $value . '<br/>';
+							else
+								echo 'error inserting... ' . $query . '<br/>';
+						}
 						else
-							echo 'error inserting... ' . $query . '<br/>';
+						{
+							$query = "UPDATE EAVAttributeValue SET 
+							Value = '" . $value . 
+							"' WHERE AttributeId = " . $attribute . " AND EntityId LIKE '" . $entity . "';";
+							if(mysql_query($query))
+								echo 'Updated Attribute: ' . $attribute . ' Entity: ' . $entity . 
+									'with value: ' . $value . '<br/>';
+							else
+								echo 'Error updating' . $query . '<br/>';
+						}
 					}
 				}
 			}
