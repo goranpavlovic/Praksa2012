@@ -15,7 +15,7 @@ INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpress
 INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpressionMatch) VALUES ('Description',NULL,'String','');
 INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpressionMatch) VALUES ('Comments',NULL,'String','');
 INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpressionMatch) VALUES ('Rating',NULL,'String','');
-INSERT INTO MetaEAVAttribute(DefaultValue, Datatype, AttributeName, RegularExpressionMatch) VALUES (NULL,'INT','Length','')
+INSERT INTO MetaEAVAttribute(DefaultValue, Datatype, AttributeName, RegularExpressionMatch) VALUES (NULL,'INT','Length','');
 /*Movie*/
 INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpressionMatch) VALUES ('Name',NULL,'String','');
 INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpressionMatch) VALUES ('Surname',NULL,'String','');
@@ -112,27 +112,11 @@ INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES
 /*Sports Event*/
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Event'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Location'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Event'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Surface'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Event'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Number of visitors'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Event'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='General'));
 /*Show*/
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Show'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Host'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Show'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Themes'));
 
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Show'),
@@ -157,19 +141,7 @@ INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES
 
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Broadcast'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Broadcast Type'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Broadcast'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Is for kids'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Broadcast'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Host'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Broadcast'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Themes'));
 
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Broadcast'),
@@ -182,14 +154,10 @@ INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Broadcast'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Soundman'));
-/*Music show*/INSERT INTO MetaEAVAttribute (AttributeName,DefaultValue,DataType,RegularExpressionMatch) VALUES ('Themes',NULL,'String','');
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
+/*Music show*/
+INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Music Show'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Host'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Music Show'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Themes'));
 
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Music Show'),
@@ -209,24 +177,8 @@ INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES
 
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Music Show'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Genre'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Music Show'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Artist'));
 /*Race*/
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Race'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Location'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Race'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Surface'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Race'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Number of visitors'));
-
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Race'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='General'));
@@ -241,24 +193,12 @@ INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES
 /*Sports Match*/
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Match'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Location'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Match'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Surface'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Match'),
-(SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Number of visitors'));
-
-INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
-((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Match'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='General'));
 
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Match'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Sports Match set'));
-[
+
 INSERT INTO MetaEntitySetDependency (EntityTypeId, AttributeSetId) VALUES 
 ((SELECT EntityTypeId FROM MetaEAVEntityType WHERE EntityTypeName='Sports Match'),
 (SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Home Team'));
@@ -682,3 +622,4 @@ INSERT INTO MetaAtrSetDependecy (AttributeSetId, AttributeId) VALUES
 INSERT INTO MetaAtrSetDependecy (AttributeSetId, AttributeId) VALUES 
 ((SELECT AttributeSetId FROM MetaEAVAttributeSet WHERE AttributeSetName='Sports Event Set'),
 (SELECT AttributeId FROM MetaEAVAttribute WHERE AttributeName='Number of visitors'));
+
