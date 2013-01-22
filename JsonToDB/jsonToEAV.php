@@ -1,4 +1,6 @@
 <?php
+//ini_set( 'default_charset', 'UTF-8' );
+//header("Content-type: text/html; charset=utf-8");
 
 function checkIfExists($attribute,$entity)
 {
@@ -12,7 +14,6 @@ function checkIfExists($attribute,$entity)
 		return FALSE;
 }
 
-
 if(!$con = mysql_connect("localhost","root","Praksa2012"))
 {
 	echo 'error connecting to database';
@@ -23,6 +24,7 @@ if(!mysql_select_db('Praksa2012', $con))
 	echo 'error selecting database';
 	break;
 }
+if(mysql_set_charset('utf8', $con))
 if(!$file = fopen($_GET["file"],'r'))
 {
 	echo 'error opening file';
@@ -67,16 +69,18 @@ while(!feof($file))
 	    		}
 	}
 	else
-	{
+	{    
 	    //Get TvId
 		$query = 'SELECT TvId FROM TVStation WHERE TvName = "' . $data->{'TV'} . '";';
-		echo $query;
+		//echo $query;
 		$res = mysql_query($query);
 		$fetch= mysql_fetch_array($res);
 		$tvid = $fetch['TvId'];
-		echo 'tv id = ' . $tvid . '<br/>';
+		//echo 'tv id = ' . $tvid . '<br/>';
 		foreach($data as $key => $value)
 		{
+		    utf8_encode($value);
+		    //iconv(mb_detect_encoding($value), 'utf-8', $value);
 			if($key !== 'TV' && $key !== 'Date' && $key !== 'Time' && $key !== 'Type')
 			{
 			    //Get EntityId

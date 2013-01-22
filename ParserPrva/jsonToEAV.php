@@ -68,6 +68,7 @@ while(!feof($file))
 	}
 	else
 	{
+	    //Get TvId
 		$query = 'SELECT TvId FROM TVStation WHERE TvName = "' . $data->{'TV'} . '";';
 		echo $query;
 		$res = mysql_query($query);
@@ -78,16 +79,19 @@ while(!feof($file))
 		{
 			if($key !== 'TV' && $key !== 'Date' && $key !== 'Time' && $key !== 'Type')
 			{
+			    //Get EntityId
 				$dateString = explode('-',$data->{'Date'});
 				$query = 'SELECT EntityId FROM EAVEntity 
 						WHERE DateTime = "' . $dateString[2]. '-' . $dateString[1]. '-' . $dateString[0] . ' ' . $data->{'Time'} . '" AND TvStation = ' . $tvid . ';';
-				$result = mysql_query($query);
+				if(!$result = mysql_query($query))
+				    echo 'Error executing: ' . $query . '<br />'; 
 				if(!($row = mysql_fetch_array($result, MYSQL_ASSOC)))
 				{
 					echo 'No record of: ' . $data->{'Name'} . ' on: ' . $data->{'Time'} . ' ' . $data->{'Date'} . ' in database ' . $query .'<br/>';
 				}
 				else
 				{
+				    //Get AttributeId
 					$entity = $row["EntityId"];
 					$result = mysql_query('SELECT AttributeId FROM MetaEAVAttribute WHERE AttributeName LIKE ("' . $key . '");');
 					if(!($row = mysql_fetch_array($result, MYSQL_ASSOC)))
@@ -99,8 +103,8 @@ while(!feof($file))
 						$attribute = $row['AttributeId'];
 						if(!checkIfExists($attribute,$entity))
 						{
-							$query = 'INSERT INTO EAVAttributeValue (AttributeId,Value,EntityId) 
-									VALUES (' . $attribute . ',"' . $value . '","' . $entity . '");';
+							$query = "INSERT INTO EAVAttributeValue (AttributeId,Value,EntityId) 
+									VALUES (" . $attribute . ",'" . $value . "','" . $entity . "');";
 							//echo 'inserting... ' . $query . '<br/>';
 							if(mysql_query($query))
 								echo 'Succesfully inserted value: ' . $value . '<br/>';
@@ -109,9 +113,9 @@ while(!feof($file))
 						}
 						else
 						{
-							$query = 'UPDATE EAVAttributeValue SET 
-							Value = "' . $value . 
-							'" WHERE AttributeId = ' . $attribute . ' AND EntityId LIKE "' . $entity . '";';
+							$query = "UPDATE EAVAttributeValue SET 
+							Value = '" . $value . 
+							"' WHERE AttributeId = " . $attribute . " AND EntityId LIKE '" . $entity . "';";
 							if(mysql_query($query))
 								echo 'Updated Attribute: ' . $attribute . ' Entity: ' . $entity . 
 									'with value: ' . $value . '<br/>';
