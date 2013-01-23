@@ -21,6 +21,7 @@ function checkIfExists($timestamp,$tv)
 		echo 'error selecting database';
 		break;
 	}
+	if(mysql_set_charset('utf8', $con))
 	if(!$file = fopen($_GET["file"],'r'))
 	{
 		echo 'error opening file';
