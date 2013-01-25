@@ -53,6 +53,21 @@ $result = null;
 return $result;
 			
 }
+
+/*function getDescription($url)
+{
+	$result = '';
+	$content = $url->find('div[id=content]',0);
+	$i=1;//da bi preskocio datum, naziv i sinopsis
+	foreach($content->find('p') as $p)
+	{
+		if($i>3)
+			$result = $result . ' ' . $p;
+		$i++;
+	}
+	return $result;
+}*/
+
 //$html = file_get_html('http://www.rts.rs/page/tv/ci/broadcast/17/%D0%A0%D0%A2%D0%A1+1.html');
 $html = file_get_html('http://www.rts.rs/page/tv/sr/broadcast/20/RTS+1.html');
 
@@ -75,6 +90,7 @@ if(!$file)
 	echo 'error opening file';
 else
 {
+	$arrayOfEntities = Array();
 
 	foreach($tabela->children() as $child)
 	{
@@ -84,6 +100,11 @@ else
 		$age = trim($child->find('div[class=ProgramAge]',0)->first_child()->alt);
 		$age = str_replace('pg','',$age);
 		//echo '<br/>';
+
+		$string = trim($time) .' ' . trim($name) .' '. trim($age) . "\n";
+		$date = $dan . '-' . $mesec . '-' . $godina;
+		$arr = array('Date' => $date ,'Time' => $time, 'Name' => $name, 'Age' => $age);
+		
 
 		$type = '';
 		if($child->find('div[class=ProgramType ColorVesti]', 0))
@@ -101,17 +122,50 @@ else
 		else if($child->find('div[class=ProgramType ColorFilmovi]', 0))
 		{
 			$type = 'Movie';
+			$details = $child->find('div[class=ProgramName]',0);
+			if($details)
+			{
+				$link = $details->find('a', 0);
+				if($link)
+				{
+					if($link->href)
+					{
+						$linkResponse = file_get_html('http://www.rts.rs' . $link->href);
+						$arr['Synopsys'] = $linkResponse->find('p[class=lead]',0)->plaintext;
+						$desc = '';
+						$content = $linkResponse->find('div[id=content]',0);
+						$i=1;//da bi preskocio datum, naziv i sinopsis
+						foreach($content->find('p') as $p)
+						{
+							if($i>3)
+								$desc = $desc . ' ' . $p->plaintext;
+							$i++;
+						}
+						$arr['Description'] = $desc;
+
+						//$pictureDiv = $content->find('div[class=boxImage]',0);
+						//echo $picture = $pictureDiv->find('img',0)->src;
+						if($imgTag = $content->find('img', 0))
+						{
+							$imageLink = 'http://www.rts.rs' . $imgTag->src;
+							$arr['Picture'] = $imageLink;
+						}
+					}
+				}
+			}
 		}
 		else
 		{
-			$type = 'Show';
+			$type = 'Broadcast';
 		}
-		$string = trim($time) .' ' . trim($name) .' '. trim($age) . "\n";
-		$date = $dan . '-' . $mesec . '-' . $godina;
-		$arr = array('Date' => $date ,'Time' => $time, 'Name' => $name, 'Age' => $age, 'Type' => $type, 'TV' => 'RTS1');
+		
+		$arr['Type'] = $type;
+		//$arrayOfEntities.push($arr);
 		$json = json_encode($arr);
 		fwrite($file,$json);
 	}
+	//$json = json_encode($arrayOfEntities);
+	//fwrite($file, $json);	
 }
 
 fclose($file);
