@@ -64,6 +64,9 @@ echo "\n";
 
 $html = file_get_html($requestLink);
 
+while($html && $counter < 8)
+{
+
 	$dateTag = $html->find('div[class=currentDate]', 0);
 
 	$date = strstr($dateTag->innertext, ',');
@@ -85,50 +88,25 @@ $html = file_get_html($requestLink);
 	$year = $monthYearArray[2];
 
 	$date = $day . '-' . $month . '-' . $year;
-	
+
 	$year = $monthYearArray[2];
-	
-while($html && $counter < 7)
-{
-	$JsonFile = Array();
-	
-	$JsonFile["Date"] = $date;
-	
-	$JsonFile["TV"] = "Prva TV";
-	
-	$JsonFile["Shows"] = Array();
-	
-	
+
 	$tvTable = $html->find('div[class=tabs-container fix]', 0);
 
 	$i = 0;
 
 
 	$children = $tvTable->children();
-	
-	$connection = mysql_connect('localhost', 'root', 'Praksa2012');
-	
-	$database = mysql_select_db('Praksa2012', $connection);
-	
-	$query = "SELECT Location from Path where Name='JsonFiles'";
 
-	$result = mysql_query($query);
+	$fileName = "JsonFiles/ParserPrvaDay" . $counter . ".json";
 
-	$row = mysql_fetch_array($result);
-	 
-	$jsonFilesPath = $row["Location"];
-
-	$fileName = $jsonFilesPath . "ParserPrvaDay" . $counter . ".json";
-
-	$file = fopen($fileName,'w');
+	$file = fopen('ParsePrva.json','w');
 	if(!$file)
 		echo 'error opening file';
 
 	foreach($children as $child)
 	{
-		$show = Array();
-		$show["Attributes"] = Array();
-		
+	
 		$typeTag = $child->find('p[class=guideIcon]', 0);
 
 		$typeImgTag = $typeTag->find('img', 0);
@@ -138,34 +116,20 @@ while($html && $counter < 7)
 		$attributes = array();
 
 		$attributes['Date'] = $date;
-		
+
 		$titleTag = $child->find('p[class=time_title]', 0);
 
 		$attributes['Time'] = $titleTag->find('span[class=time]', 0)->innertext . ':00';
-		
-		$show['Time'] = $titleTag->find('span[class=time]', 0)->innertext . ':00';
 
 		$attributes['TV'] = "Prva TV";
 
 		if($titleTag->find('span[class=title]', 0)->find('a', 0))
 		{
-			$connection = mysql_connect('localhost', 'root', 'Praksa2012');
-			
-			$database = mysql_select_db('Praksa2012', $connection);
-			
 			$name = trim($titleTag->find('span[class=title]', 0)->find('a', 0)->innertext);
 
 			$name = str_replace("\t", '', $name);
-			
-			$name = str_replace("'", "", $name);
-			
-			$name = str_replace('"', "", $name);
-			
-			$nameArray = Array();
-			$nameArray["AttributeName"] = "Name";
-			$nameArray["AttributeSet"] = "General";
-			$nameArray["AttributeValue"] = $name;
-			array_push($show["Attributes"], $nameArray);
+
+			$attributes['Name'] = $name;
 
 			$details = 'http://www.prva.rs' . $titleTag->find('span[class=title]', 0)->find('a', 0)->href;
 
@@ -176,12 +140,6 @@ while($html && $counter < 7)
 			$title = $boxFixDiv->find('h1', 0);
 
 			$attributes['Synopsis'] = $boxFixDiv->find('p[class=lead]', 0)->plaintext;
-			
-			$synopsis = Array();
-			$synopsis["AttributeName"] = "Synopsis";
-			$synopsis["AttributeSet"] = "General";
-			$synopsis["AttributeValue"] = $boxFixDiv->find('p[class=lead]', 0)->plaintext;
-			array_push($show["Attributes"], $synopsis);
 
 			$boxFullElements = $boxFixDiv->find('div[class=boxFull]');
 			foreach($boxFullElements as $element)
@@ -208,11 +166,6 @@ while($html && $counter < 7)
 							)
 							{
 								$attributes['Link'] = $videoLink;
-								$link = Array();
-								$link["AttributeName"] = "Link";
-								$link["AttributeSet"] = "General";
-								$link["AttributeValue"] = $videoLink;
-								array_push($show["Attributes"], $link);
 							}
 						}
 					}
@@ -224,12 +177,6 @@ while($html && $counter < 7)
 					if($imageTag)
 					{
 						$attributes['Picture'] = 'http://www.prva.rs' . $imageTag->src;
-						$picture = Array();
-						$picture["AttributeName"] = "Picture";
-						$picture["AttributeSet"] = "General";
-						//$picture["AttributeValue"] = $boxFixDiv->find('p[class=lead]', 0)->plaintext;
-						$picture["AttributeValue"] = $attributes['Picture'];
-						array_push($show["Attributes"], $picture);
 					}
 				}
 			}
@@ -242,32 +189,15 @@ while($html && $counter < 7)
 			{
 				$description = str_replace( $element->plaintext, '', $description);
 			}
-			$description = str_replace("'", "", $description);
-			$description = str_replace('"', "", $description);
 			$attributes['Description'] = $description;
-			
-			$descrArray = Array();
-			$descrArray["AttributeName"] = "Description";
-			$descrArray["AttributeSet"] = "General";
-			$descrArray["AttributeValue"] = $description;
-			array_push($show["Attributes"], $descrArray);
 		}
 		else
 		{
 			$name = $titleTag->find('span[class=title]', 0)->innertext;
 		
 			$name = str_replace("\t", '', $name);
-			
-			$name = str_replace("'", "", $name);
-			
-			$name = str_replace('"', "", $name);
 		
 			$attributes['Name'] = $name;
-			$nameArray = Array();
-			$nameArray["AttributeName"] = "Name";
-			$nameArray["AttributeSet"] = "General";
-			$nameArray["AttributeValue"] = $name;
-			array_push($show["Attributes"], $nameArray);
 		}
 
 		if($typeImgTag->title === 'Emisija')
@@ -296,16 +226,11 @@ while($html && $counter < 7)
 		}
 
 		$attributes['Type'] = $type;
-		$show["Type"] = $type;
-		
-		array_push($JsonFile["Shows"], $show);
+
+		$json = json_encode($attributes);
+		fwrite($file,$json);
 	}
-	$json = json_encode($JsonFile);
-	fwrite($file, $json);
 	fclose($file);
-	
-	$date = date( "d-m-Y",strtotime("+1 day", strtotime($date)));
-	
 	echo 'file closed\n';
 
 	$counter++;
