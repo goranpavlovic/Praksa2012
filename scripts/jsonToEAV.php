@@ -1,6 +1,4 @@
 <?php
-//ini_set( 'default_charset', 'UTF-8' );
-//header("Content-type: text/html; charset=utf-8");
 
 if(!$con = mysql_connect("localhost","root","Praksa2012"))
 {
@@ -25,33 +23,11 @@ $jsonObject = json_decode($file_contents);
 
 $date = $jsonObject->{'Date'};
 
-//while(!feof($file))
 foreach($jsonObject->{'Shows'} as $data)
 {
-	/*
-	$json = '';
-	$eof = false;
-	while(($input = fgetc($file)) !== '}')
-	{
-		if(feof($file))
-		{
-			$eof = true;
-			break;
-		}
-		//echo $input . "\n";
-		$json = $json . $input;
-	}
-	if($eof)
-		break;
-	$json = $json . '}';
-	$data = json_decode($json);
-	*/
-	
-	
 	
 	if( $data === null)
 	{
-		/*
 		echo 'error';
 		switch (json_last_error()) 
 			{
@@ -77,26 +53,22 @@ foreach($jsonObject->{'Shows'} as $data)
 			    echo ' - Unknown error';
 			break;
 	    		}
-	    		*/
+	    		
 	}
 	else
 	{    
 	    //Get TvId
 		$query = 'SELECT TvId FROM TVStation WHERE TvName = "' . $jsonObject->{'TV'} . '";';
-		//echo $query;
 		$res = mysql_query($query);
 		$fetch= mysql_fetch_array($res);
 		$tvid = $fetch['TvId'];
-		//echo 'tv id = ' . $tvid . '<br/>' . "\n";
-		//foreach($data as $key => $value)
 		foreach($data->{'Attributes'} as $attrib)
 		{
 			$key = $attrib->{'AttributeName'};
 			$value = $attrib->{'AttributeValue'};
 			$attributeSet = $attrib->{'AttributeSet'};
-			
 		    utf8_encode($value);
-		    //iconv(mb_detect_encoding($value), 'utf-8', $value);
+
 			if($key !== 'TV' && $key !== 'Date' && $key !== 'Time' && $key !== 'Type')
 			{
 			    //Get EntityId
@@ -143,7 +115,6 @@ foreach($jsonObject->{'Shows'} as $data)
 							$attributeSetId = $row['AttributeSetId'];
 							$query = "INSERT INTO EAVAttributeValue (AttributeId,Value,EntityId, AttributeSetId) 
 										VALUES (" . $attribute . ",'" . $value . "','" . $entity . "','" . $attributeSetId . "');";
-								//echo 'inserting... ' . $query . '<br/>';
 							if(mysql_query($query))
 								echo 'Succesfully inserted value: ' . $value . '<br/>' . "\n";
 							else

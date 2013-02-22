@@ -3,7 +3,7 @@ function checkIfExists($timestamp,$tv)
 {
 	mysql_select_db('Praksa2012',mysql_connect("localhost","root","Praksa2012"));
 	$query = 'SELECT EntityId FROM EAVEntity WHERE DateTime LIKE ("' . $timestamp . '%") AND TvStation = ' . $tv . ';';
-	//echo $query . '<br/>' . "\n";
+	
 	$result = mysql_query($query);
 	if(mysql_fetch_array($result))
 		return TRUE;
@@ -22,7 +22,6 @@ if(!mysql_select_db('Praksa2012', $con))
 	exit();
 }
 if(mysql_set_charset('utf8', $con)){}
-//if(!$file = fopen($_GET["file"],'r'))
 echo $argv[1];
 if(!$file = fopen($argv[1],'r'))
 {
@@ -73,9 +72,6 @@ foreach($jsonObject->{'Shows'} as $data)
 	}
 	else
 	{
-		//echo print_r($data);
-		//$upit ='INSERT INTO Broadcast (Date,Time,Name) VALUES ("'. $data->{'Date'} . '","' . $data->{'Time'} . '","' . $data->{'Name'} . '");';
-		//$var = $data->{'Date'} . $data->{'Time'};
 		$var = $date . $data->{'Time'};
 		$DateTime = date("Y-m-d H-i-s",strtotime($var));
 		$result = mysql_fetch_array(mysql_query('SELECT TVid FROM TVStation WHERE TVName LIKE ("' . $tv .'")'),MYSQL_ASSOC);

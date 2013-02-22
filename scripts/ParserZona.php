@@ -57,7 +57,6 @@ foreach($urls as $day => $url)
 		$nameArr = Array();
 		$nameArr["AttributeName"] = "Name";
 		$nameArr["AttributeSet"] = "General";
-		//echo html_entity_decode($nameArr["AttributeValue"] = $programName->innertext,ENT_COMPAT | ENT_HTML401,'utf-8');
 		$nameArr["AttributeValue"] = html_entity_decode($programName->innertext,ENT_COMPAT | ENT_HTML401,'utf-8');
 		$show["Time"] = $timeDiv->innertext;
 		if(strstr($programName->innertext, "Serija"))

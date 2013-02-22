@@ -41,7 +41,6 @@ else
 				if(strstr($entry, ".json"))
 				{
 					echo ' true <br/>';
-					//exec('usr/bin/php -f jsonToDB.php JsonFiles/' . $entry);
 					$DB =  shell_exec('/usr/bin/php5 -f ' . $scriptsPath . 'jsonToDB.php ' . $jsonFilesPath . $entry);
 					if($DB)
 						echo $DB . '</br>';
@@ -55,9 +54,6 @@ else
 				}
 				else
 					echo '<br/>';
-				//JsonToDB($entry);
-				//$file = $entry;
-				//exec('php -f JsonToDB/jsonToDB.php ' . $file);
 			}
 			closedir($handle);
 		}

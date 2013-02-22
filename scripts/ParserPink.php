@@ -31,33 +31,25 @@ $refs = $html->find('a');
 $links = Array();
 foreach($refs as $ref)
 {
-// 	echo $ref->href . "\n";
 	if(strstr($ref->href,'index.php?dan='))
 	{
 		array_push($links, $ref->href);
-// 		echo $ref->href;
 	}
 }
 foreach($links as $link)
 {
-// echo $link;
 $html = file_get_html($baseLink . $link);
 $scripts = $html->find('script');
 $json = array();
 
 $json['TV'] = 'Pink';
 
-//izvlacenje datuma
 $date = $html->find('.meniGlavniBeli',1);
 $date->plaintext . "\n";
 $date = explode(',', $date->plaintext);
 $date = $date[1];
 $date = explode('.',$date);
-//date = $date[0];
-
-// $json['Date'] = $today->format('d-m-Y');
 $date = $date[0] . '-' . getMonth($date[1]) . '-' .$today->format('Y');
-// echo '-' . trim($date) . '-' . "\n";
 $json['Date'] = trim($date);
 $json['Shows'] = Array();
 
@@ -79,8 +71,6 @@ foreach($scripts as $script)
 				$string = str_replace(' Array(', '', $array);
 				$string = str_replace("'", '', $string);
 				$data = explode(',', $string);
-				//obrada emisije
-				//echo 'Name: ' . $data[0] . ' Time: ' . $data[6];
 				$show['Time'] = $data[6];
 				$show['Type'] = "Show";
 				

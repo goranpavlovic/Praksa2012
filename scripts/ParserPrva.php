@@ -52,11 +52,7 @@ function PrvaMonthToNumber($month)
 }
 
 $baseLink = "http://www.prva.rs/sr/program/tvGuide.html?day=";
-
-//$html = file_get_html('http://www.prva.rs/sr/program/tvGuide.html?day=0');
-
 $counter = 0;
-
 $requestLink = $baseLink . $counter;
 
 echo $requestLink;
@@ -227,7 +223,6 @@ while($html && $counter < 7)
 						$picture = Array();
 						$picture["AttributeName"] = "Picture";
 						$picture["AttributeSet"] = "General";
-						//$picture["AttributeValue"] = $boxFixDiv->find('p[class=lead]', 0)->plaintext;
 						$picture["AttributeValue"] = $attributes['Picture'];
 						array_push($show["Attributes"], $picture);
 					}
@@ -255,11 +250,8 @@ while($html && $counter < 7)
 		else
 		{
 			$name = $titleTag->find('span[class=title]', 0)->innertext;
-		
-			$name = str_replace("\t", '', $name);
-			
-			$name = str_replace("'", "", $name);
-			
+			$name = str_replace("\t", '', $name);	
+			$name = str_replace("'", "", $name);	
 			$name = str_replace('"', "", $name);
 		
 			$attributes['Name'] = $name;

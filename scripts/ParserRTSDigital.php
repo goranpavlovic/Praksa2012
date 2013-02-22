@@ -50,9 +50,6 @@ function RTSDatumi($mesec)
 
 $todayDate = date("Y-m-d");
 
-//$date = strtotime("+1 day", strtotime($today));
-
-//$baseLink = "http://www.rts.rs/page/tv/sr/broadcast/20/RTS+1.html?month=1&year=2013&day=24&";
 $baseLink = "http://www.rts.rs/page/tv/sr/broadcast/255/RTS+Digital.html?";
 
 $requestDay = date("j", strtotime($todayDate));
@@ -68,8 +65,6 @@ $tv = "RTS Digital";
 echo $requestLink;
 echo "\n";
 
-//$html = file_get_html('http://www.rts.rs/page/tv/ci/broadcast/17/%D0%A0%D0%A2%D0%A1+1.html?month=1&year=2013&day=24&');
-
 $html = file_get_html($requestLink);
 
 $counter = 0;
@@ -80,8 +75,6 @@ while($html && $counter < 30)
 
 	$JsonFile = Array();
 	$JsonFile ["TV"] = $tv;
-
-	//$html = file_get_html('http://www.rts.rs/page/tv/sr/broadcast/20/RTS+1.html');
 
 	$datum = $html->find('div[id=center]',0)->find('h1',0)->plaintext;
 
@@ -128,11 +121,9 @@ while($html && $counter < 30)
 			$Show = Array();
 				
 			$time = trim($child->find('div[class=ProgramTime]',0)->plaintext);
-			//echo mb_detect_encoding(trim($child->find('div[class=ProgramName]',0)->plaintext));
 			$name = trim($child->find('div[class=ProgramName]',0)->plaintext);
 			$age = trim($child->find('div[class=ProgramAge]',0)->first_child()->alt);
 			$age = str_replace('pg','',$age);
-			//echo '<br/>';
 
 			$type = '';
 			if($child->find('div[class=ProgramType ColorVesti]', 0))

@@ -19,42 +19,30 @@ function getInfo($href,$type)
 	
 	$i = 1;
 	$description = '';
-	/*$rezija = '';
-	$uloge = '';
-	$trajanje = '';
-	$zanr = '';
-	$produkcija = '';
-	$autor= '';
-	$produkcija = '';*/
+
 	foreach($container->find('p') as $p)
 	{
 		if($i === 1)
 		{
-			echo $p->plaintext;
+
 		}
-		/*//filtriranje
-		else if(strpos($p->plaintext,'Režija:'))
-			echo '<br/>rezija: ' . str_replace('Režija:', '', $rezija = $p->plaintext);
-		else if(strpos($p->plaintext,'Uloge:'))
-			echo '<br/>uloge: ' . str_replace('Uloge:', '', $uloge = $p->plaintext);
-		else if(strpos($p->plaintext,'Žanr:'))
-			echo '<br/>zanr: ' . str_replace('Žanr:', '', $zanr = $p->plaintext);
-		else if(strpos($p->plaintext,'Trajanje:'))
-			echo '<br/>trajanje: ' . str_replace('Trajanje:', '', $trajanje = $p->plaintext);
-		else if(strpos($p->plaintext,'Produkcija:'))
-			echo '<br/>produkcija: ' . str_replace('Produkcija:', '', $produkcija = $p->plaintext);
-		else*/
+		else 
+		{
 			$description = $description . $p->plaintext;
-			
+		}	
 		$i++;
 	}
-	echo '<br/><br/>opis: ' . $description . '<br/>';
+
 	$info = array();
 	$info['Valid'] = false;
-	$info['Description'] = $description;
-	$info['Frequency'] = $frequency;
-	$info['Synopsys'] = $synopsys;
-	$info['Image'] = $image;
+	if($description)
+		$info['Description'] = $description;
+	if($frequency)
+		$info['Frequency'] = $frequency->plaintext;
+	if($synopsys)
+		$info['Synopsys'] = $synopsys->plaintext;
+	if($image)
+		$info['Image'] = $image->src;
 	$info['Valid'] = true;
 	return $info;
 }
@@ -66,7 +54,6 @@ $timestamp = date("d-m-Y");
 
 for($i=1; $i<=7; $i++)
 {
-	//$i = 1;
 $html = file_get_html('http://www.b92.net/tv/program.php' . '?id=' . strval($i));
 
 if($i !== 1)
@@ -76,7 +63,6 @@ if($i !== 1)
 	$timestamp = $t->format('d-m-Y');
 }
 
-//$dateTag = $html->find('div[class=currentDate]', 0);
 $table = $html->find('table[class=program]',0);
 
 $json = array();
@@ -91,6 +77,7 @@ foreach($table->find('tr') as $tr)
 	$attribute = array();
 	$attributes = array();
 	$show = array();
+	$show['Attributes'] = Array();
 	
 	$time = $tr->find('td[class=vreme]',0)->plaintext;
 	
@@ -115,41 +102,45 @@ foreach($table->find('tr') as $tr)
 	if($checkLink = $tr->find('td',4)->find('a',0))
 		$link = getInfo($checkLink->href,$type);
 	
-	//echo 'Time: ' . $time . ' Name: ' . $name . ' Type: ' . $type . '  Link:' . $link . '</br>';
 	
 	//name
 	$attribute['AttributeName'] = 'Name';
 	$attribute['AttributeSet'] = 'General';
 	$attribute['AttributeValue'] = $name;
-	array_push($attributes, $attribute);
-	/*if($link['Valid'])
+	array_push($show['Attributes'], $attribute);
+	if($link['Valid'])
 	{
 		//description
-		$attribute['AttributeName'] = 'Description';
-		$attribute['AttributeSet'] = 'General';
-		$attribute['AttributeValue'] = $link['Description'];
-		array_push($attributes, $attribute);
+		if($link['Description'])
+		{
+			$attribute['AttributeName'] = 'Description';
+			$attribute['AttributeSet'] = 'General';
+			$attribute['AttributeValue'] = $link['Description'];
+			array_push($show['Attributes'], $attribute);
+		}
 		//image
-		$attribute['AttributeName'] = 'Picture';
-		$attribute['AttributeSet'] = 'General';
-		$attribute['AttributeValue'] = $link['Image'];
-		array_push($attributes, $attribute);
+		if($link['Image'])
+		{
+			$attribute['AttributeName'] = 'Picture';
+			$attribute['AttributeSet'] = 'General';
+			$attribute['AttributeValue'] = $link['Image'];
+			array_push($show['Attributes'], $attribute);
+		}
 		//synopsys
-		$attribute['AttributeName'] = 'Synopsis';
-		$attribute['AttributeSet'] = 'Movie Set';
-		$attribute['AttributeValue'] = $link['Synopsys'];
-		array_push($attributes, $attribute);
-	}*/
+		if($link['Synopsys'])
+		{
+			$attribute['AttributeName'] = 'Synopsis';
+			$attribute['AttributeSet'] = 'Movie Set';
+			$attribute['AttributeValue'] = $link['Synopsys'];
+			array_push($show['Attributes'], $attribute);
+		}
+	}
 	
 	$show['Time'] = $time;
 	$show['Type']= $type;
-	//$show['Attributes'] = array();
-	//array_push($show['Attributes'], $attributes);
-	$show["Attributes"] = $attributes;
 	array_push($shows, $show);
 }
 
-//array_push($json['Shows'], $shows);
 $json["Shows"] = $shows;
 $encode = json_encode($json);
 
